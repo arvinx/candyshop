@@ -1,25 +1,31 @@
-		<h2>Product Table</h2>
+<div class="row">
+  <div class="medium-11 small-centered columns">
+  		<br><br>
+		<h2 style='text-align: center'>Shop Candy</h2>
 		<?php 
 				echo "<p>" . anchor('candystore/newForm','Add New Candy') . "</p>";
 		 	  
-				echo "<table>";
-				echo "<tr><th>Name</th><th>Description</th><th>Price</th><th>Photo</th></tr>";
+				echo "<ul class='small-block-grid-3'>";
 				
 				foreach ($products as $product) {
-					echo "<tr>";
-					echo "<td>" . $product->name . "</td>";
-					echo "<td>" . $product->description . "</td>";
-					echo "<td>" . $product->price . "</td>";
-					echo "<td><img src='" . base_url() . "images/product/" . $product->photo_url . "' width='100px' /></td>";
+					echo "<li>";
+					echo "<ul class='pricing-table'>";
+					  echo " <li class='title'>" . $product->name .  "</li>";
+					  echo "<li class='price'>$" . $product->price . "</li>";
+					  echo "<li class='description'>" . $product->description . "</li>";
+					  echo "<li><img class='prod-img' src='" . base_url() . "images/product/" . $product->photo_url . "'  /></li>";
+					  echo "<li class='cta-button'><a class='button' href='#'>Add to Cart</a></li>";
+					echo "</ul>";
+					// echo "<td>" . anchor("candystore/delete/$product->id",'Delete',"onClick='return confirm(\"Do you really want to delete this record?\");'") . "</td>";
+					// echo "<td>" . anchor("candystore/editForm/$product->id",'Edit') . "</td>";
+					// echo "<td>" . anchor("candystore/read/$product->id",'View') . "</td>";
 						
-					echo "<td>" . anchor("candystore/delete/$product->id",'Delete',"onClick='return confirm(\"Do you really want to delete this record?\");'") . "</td>";
-					echo "<td>" . anchor("candystore/editForm/$product->id",'Edit') . "</td>";
-					echo "<td>" . anchor("candystore/read/$product->id",'View') . "</td>";
-						
-					echo "</tr>";
+					echo "</li>";
 				}
-				echo "<table>";
+				echo "</ul>";
 		?>
 
 	
 
+	</div>
+</div>

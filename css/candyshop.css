@@ -1,0 +1,10 @@
+
+/*overriding foundation.css class*/
+.pricing-table .title {
+	background-color: LightSkyBlue;
+}
+
+.pricing-table .price {
+	font-size: 1rem;
+}
+

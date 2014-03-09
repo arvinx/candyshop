@@ -3,33 +3,34 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/foundation.css" />
-    <script src="js/vendor/modernizr.js"></script>
+    <link rel="stylesheet" href="<?= base_url() ?>/css/foundation.css" />
+    <link rel="stylesheet" href="<?= base_url() ?>/css/candyshop.css" />
+    <script src="<?= base_url() ?>/js/vendor/modernizr.js"></script>
   </head>
   <body>
 
 
-<nav class="top-bar" data-topbar>
-  <ul class="title-area">
-    <li class="name">
-      <h1><a href="#">CandyShop</a></h1>
-    </li>
-    <li class="toggle-topbar menu-icon"><a href="#">Menu</a></li>
-  </ul>
-
-  <section class="top-bar-section">
-    <!-- Right Nav Section -->
-    <ul class="right">
-<!--       if the user is logged in display "logout" otherwise "login"
- -->      <li class="active"><a href="#">Login</a></li>
-<!--       show drop down menu for reciepts, prev orders if logged in
- -->      <li class="has-dropdown">
-        <a href="#">My Account</a>
-        <ul class="dropdown">
-          <li><a href="#">Reciepts</a></li>
-        </ul>
+  <nav class="top-bar" data-topbar>
+    <ul class="title-area">
+      <li class="name">
+        <h1><a href="<?php echo site_url(); ?>">CandyShop</a></h1>
       </li>
+      <li class="toggle-topbar menu-icon"><a href="#">Menu</a></li>
     </ul>
-  </section>
-</nav>
 
+    <section class="top-bar-section">
+      <!-- Right Nav Section -->
+      <ul class="right">
+  <!--       if the user is logged in display "logout" otherwise "login"
+   -->      <li class="active"><a href="#">Login</a></li>
+  <!--       show drop down menu for reciepts, prev orders if logged in
+   -->      <li class="has-dropdown">
+          <a href="#">My Account</a>
+          <ul class="dropdown">
+            <li><a href="#">Reciepts</a></li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+  </nav>
+  
