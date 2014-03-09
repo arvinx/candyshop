@@ -23,6 +23,9 @@ class CandyStore extends CI_Controller {
     		$this->load->model('product_model');
     		$products = $this->product_model->getAll();
     		$data['products']=$products;
+    		
+    		$this->load->view('templates/header.html',$data);
+    		$this->load->view('templates/footer.html',$data);
     		$this->load->view('product/list.php',$data);
     }
     
