@@ -5,7 +5,7 @@ $config = array(
 				array(
 						'field' => 'username',
 						'label' => 'Username',
-						'rules' => 'required|min_length[5]|max_length[12]'
+						'rules' => 'required|min_length[5]|max_length[24]'
 				),
 				array(
 						'field' => 'password',

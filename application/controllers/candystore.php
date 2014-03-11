@@ -58,8 +58,8 @@ class CandyStore extends CI_Controller {
 	    function login_post() {
 	    	$this->load->library('form_validation');
 
-	    	$this->form_validation->set_rules('username', 'Username', 'trim|required|xss_clean');
-	    	$this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|callback_check_database');
+	    	$this->form_validation->set_rules('username', 'Username', 'trim|required|max_length[16]|xss_clean');
+	    	$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]|max_length[16]|xss_clean|callback_check_database');
 
 	    	if($this->form_validation->run() == false)
 	    	{
@@ -112,11 +112,11 @@ class CandyStore extends CI_Controller {
 	    function register_post() {
 	    	$this->load->library('form_validation');
 
-	    	$this->form_validation->set_rules('username', 'Username', 'trim|required|xss_clean');
-	    	$this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean');
-	    	$this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean');
-	    	$this->form_validation->set_rules('first', 'First', 'trim|required|xss_clean');
-	    	$this->form_validation->set_rules('last', 'Last', 'trim|required|xss_clean');
+	    	$this->form_validation->set_rules('username', 'Username', 'trim|required|max_length[16]|xss_clean');
+	    	$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]|max_length[16]|xss_clean');
+	    	$this->form_validation->set_rules('email', 'Email', 'trim|required|max_length[45]|xss_clean');
+	    	$this->form_validation->set_rules('first', 'First', 'trim|required|max_length[24]|xss_clean');
+	    	$this->form_validation->set_rules('last', 'Last', 'trim|required|max_length[24]|xss_clean');
 	    	
 
 	    	if($this->form_validation->run() == FALSE)
