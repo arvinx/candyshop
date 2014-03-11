@@ -10,15 +10,10 @@ class CandyStore extends CI_Controller {
 
 		$config['upload_path'] = './images/product/';
 		$config['allowed_types'] = 'gif|jpg|png';
-/*	    	$config['max_size'] = '100';
-	    	$config['max_width'] = '1024';
-	    	$config['max_height'] = '768';
-*/
-	    	//$this->load->model('customer_model', '', TRUE);
-	    	$this->load->library('upload', $config);
-	    	$this->load->model('customer_model');
+    	$this->load->library('upload', $config);
+    	$this->load->model('customer_model');
 	    	
-	    }
+	}
 
 	    function index() {
 	    	$this->load->model('product_model');
@@ -63,23 +58,18 @@ class CandyStore extends CI_Controller {
 
 	    	if($this->form_validation->run() == false)
 	    	{
-		     //Field validation failed.&nbsp; User redirected to login page
-	    		//$this->load->view('customer/loginForm.php');
 	    		redirect('candystore/loginForm', 'refresh');
 	    	}
 	    	else
 	    	{
-		     //Go to private area
 	    		redirect('candystore/index', 'refresh');
 	    	}
 
 	    }
 
 	    function check_database($password) {
-	   //Field validation succeeded.&nbsp; Validate against database
 	    	$username = $this->input->post('username');
 
-	   //query the database
 	    	$result = $this->customer_model->login($username, $password);
 
 	    	if($result)
@@ -121,7 +111,6 @@ class CandyStore extends CI_Controller {
 
 	    	if($this->form_validation->run() == FALSE)
 	    	{
-		     //Field validation failed.&nbsp; User redirected to login page
 	    		$this->load->view('customer/registerForm');
 	    	}
 	    	else
@@ -129,7 +118,6 @@ class CandyStore extends CI_Controller {
 		    	$username = $this->input->post('username');
 		    	$email = $this->input->post('email');
 
-		   		//query the database
 		    	$result = $this->customer_model->is_existing_email($email);
 		    	if ($result == true) {
 		    		$this->form_validation->set_message('register_post', 'Invalid username already exists');
@@ -150,7 +138,6 @@ class CandyStore extends CI_Controller {
 
 		    	$this->customer_model->insert($new_customer);
 
-		     //Go to private area
 	    		redirect('candystore/loginForm', 'refresh');
 	    	}
 	    }
@@ -177,7 +164,6 @@ class CandyStore extends CI_Controller {
 
 	    		$this->product_model->insert($product);
 
-			//Then we redirect to the index page again
 	    		redirect('candystore/index', 'refresh');
 	    	}
 	    	else {
@@ -220,7 +206,7 @@ class CandyStore extends CI_Controller {
 
 	    		$this->load->model('product_model');
 	    		$this->product_model->update($product);
-			//Then we redirect to the index page again
+
 	    		redirect('candystore/index', 'refresh');
 	    	}
 	    	else {
@@ -240,7 +226,6 @@ class CandyStore extends CI_Controller {
 	    	if (isset($id)) 
 	    		$this->product_model->delete($id);
 
-		//Then we redirect to the index page again
 	    	redirect('candystore/index', 'refresh');
 	    }
 
