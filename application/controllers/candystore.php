@@ -1,131 +1,252 @@
 <?php
-
+session_start();
 class CandyStore extends CI_Controller {
-   
-     
-    function __construct() {
+
+
+	function __construct() {
     		// Call the Controller constructor
-	    	parent::__construct();
-	    	
-	    	
-	    	$config['upload_path'] = './images/product/';
-	    	$config['allowed_types'] = 'gif|jpg|png';
+		parent::__construct();
+
+
+		$config['upload_path'] = './images/product/';
+		$config['allowed_types'] = 'gif|jpg|png';
 /*	    	$config['max_size'] = '100';
 	    	$config['max_width'] = '1024';
 	    	$config['max_height'] = '768';
 */
-	    		    	
+	    	//$this->load->model('customer_model', '', TRUE);
 	    	$this->load->library('upload', $config);
+	    	$this->load->model('customer_model');
 	    	
-    }
+	    }
 
-    function index() {
-    		$this->load->model('product_model');
-    		$products = $this->product_model->getAll();
-    		$data['products']=$products;
+	    function index() {
+	    	$this->load->model('product_model');
 
-    		$this->load->view('templates/header.html',$data);
-    		$this->load->view('templates/footer.html',$data);
-    		$this->load->view('product/list.php',$data);
-    }
-    
-    function newForm() {
-    	    $this->load->view('templates/header.html');
-    		$this->load->view('templates/footer.html');
+	    	$products = $this->product_model->getAll();
+	    	$data['products']=$products;
+
+	    	if($this->session->userdata('logged_in')) {
+	    		$session_data = $this->session->userdata('logged_in');
+	    		$data['username'] = $session_data['username'];
+	    	}
+
+	    	$this->load->view('templates/header.html',$data);
+	    	$this->load->view('templates/footer.html',$data);
+	    	$this->load->view('product/list.php',$data);
+	    }
+
+	    function loginForm() {
+	    	$this->load->helper(array('form'));
+	    	$this->load->view('templates/header.html');
+	    	$this->load->view('templates/footer.html');
+	    	$this->load->view('customer/loginForm.php');
+	    } 
+
+	    function newForm() {
+	    	$this->load->view('templates/header.html');
+	    	$this->load->view('templates/footer.html');
 	    	$this->load->view('product/newForm.php');
-    }
-    
-	function create() {
-		$this->load->library('form_validation');
-		$this->form_validation->set_rules('name','Name','required|is_unique[product.name]');
-		$this->form_validation->set_rules('description','Description','required');
-		$this->form_validation->set_rules('price','Price','required');
-		
-		$fileUploadSuccess = $this->upload->do_upload();
-		
-		if ($this->form_validation->run() == true && $fileUploadSuccess) {
-			$this->load->model('product_model');
+	    }
 
-			$product = new Product();
-			$product->name = $this->input->get_post('name');
-			$product->description = $this->input->get_post('description');
-			$product->price = $this->input->get_post('price');
-			
-			$data = $this->upload->data();
-			$product->photo_url = $data['file_name'];
-			
-			$this->product_model->insert($product);
+	    function logout() {
+	    	$this->session->unset_userdata('logged_in');
+	    	session_destroy();
+	    	redirect('candystore/index', 'refresh');
+	    }
+
+	    function login_post() {
+	    	$this->load->library('form_validation');
+
+	    	$this->form_validation->set_rules('username', 'Username', 'trim|required|xss_clean');
+	    	$this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|callback_check_database');
+
+	    	if($this->form_validation->run() == false)
+	    	{
+		     //Field validation failed.&nbsp; User redirected to login page
+	    		//$this->load->view('customer/loginForm.php');
+	    		redirect('candystore/loginForm', 'refresh');
+	    	}
+	    	else
+	    	{
+		     //Go to private area
+	    		redirect('candystore/index', 'refresh');
+	    	}
+
+	    }
+
+	    function check_database($password) {
+	   //Field validation succeeded.&nbsp; Validate against database
+	    	$username = $this->input->post('username');
+
+	   //query the database
+	    	$result = $this->customer_model->login($username, $password);
+
+	    	if($result)
+	    	{
+	    		$sess_array = array();
+	    		foreach($result as $row)
+	    		{
+	    			$sess_array = array(
+	    				'id' => $row->id,
+	    				'username' => $row->login
+	    				);
+	    			$this->session->set_userdata('logged_in', $sess_array);
+	    		}
+	    		return true;
+	    	}
+	    	else
+	    	{
+	    		$this->form_validation->set_message('check_database', 'Invalid username or password');
+	    		return false;
+	    	}
+	    }
+
+	    function registerForm() {
+	    	$this->load->helper(array('form'));
+	    	$this->load->view('templates/header.html');
+	    	$this->load->view('templates/footer.html');
+	    	$this->load->view('customer/registerForm.php');
+	    }
+
+	    function register_post() {
+	    	$this->load->library('form_validation');
+
+	    	$this->form_validation->set_rules('username', 'Username', 'trim|required|xss_clean');
+	    	$this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean');
+	    	$this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean');
+	    	$this->form_validation->set_rules('first', 'First', 'trim|required|xss_clean');
+	    	$this->form_validation->set_rules('last', 'Last', 'trim|required|xss_clean');
+	    	
+
+	    	if($this->form_validation->run() == FALSE)
+	    	{
+		     //Field validation failed.&nbsp; User redirected to login page
+	    		$this->load->view('customer/registerForm');
+	    	}
+	    	else
+	    	{
+		    	$username = $this->input->post('username');
+		    	$email = $this->input->post('email');
+
+		   		//query the database
+		    	$result = $this->customer_model->is_existing_email($email);
+		    	if ($result == true) {
+		    		$this->form_validation->set_message('register_post', 'Invalid username already exists');
+		    		$this->load->view('customer/registerForm');
+		    	}
+		    	$result = $this->customer_model->is_existing_username($username);
+		    	if($result == true) {
+		    		$this->form_validation->set_message('register_post', 'Invalid email already exists');
+		    		$this->load->view('customer/registerForm');
+		    	}
+		    	$this->load->model('customer');
+		    	$new_customer = new Customer();
+		    	$new_customer->first = $this->input->get_post('first');		    	
+		    	$new_customer->last = $this->input->get_post('last');
+		    	$new_customer->email = $this->input->get_post('email');
+		    	$new_customer->username = $this->input->get_post('username');
+		    	$new_customer->password = $this->input->get_post('password');
+
+		    	$this->customer_model->insert($new_customer);
+
+		     //Go to private area
+	    		redirect('candystore/loginForm', 'refresh');
+	    	}
+	    }
+
+
+	    function create() {
+	    	$this->load->library('form_validation');
+	    	$this->form_validation->set_rules('name','Name','required|is_unique[product.name]');
+	    	$this->form_validation->set_rules('description','Description','required');
+	    	$this->form_validation->set_rules('price','Price','required');
+
+	    	$fileUploadSuccess = $this->upload->do_upload();
+
+	    	if ($this->form_validation->run() == true && $fileUploadSuccess) {
+	    		$this->load->model('product_model');
+
+	    		$product = new Product();
+	    		$product->name = $this->input->get_post('name');
+	    		$product->description = $this->input->get_post('description');
+	    		$product->price = $this->input->get_post('price');
+
+	    		$data = $this->upload->data();
+	    		$product->photo_url = $data['file_name'];
+
+	    		$this->product_model->insert($product);
 
 			//Then we redirect to the index page again
-			redirect('candystore/index', 'refresh');
-		}
-		else {
-			if ( !$fileUploadSuccess) {
-				$data['fileerror'] = $this->upload->display_errors();
-				$this->load->view('product/newForm.php',$data);
-				return;
-			}
-			
-			$this->load->view('product/newForm.php');
-		}	
-	}
-	
-	function read($id) {
-		$this->load->model('product_model');
-		$product = $this->product_model->get($id);
-		$data['product']=$product;
-		$this->load->view('product/read.php',$data);
-	}
-	
-	function editForm($id) {
-		$this->load->model('product_model');
-		$product = $this->product_model->get($id);
-		$data['product']=$product;
-		$this->load->view('product/editForm.php',$data);
-	}
-	
-	function update($id) {
-		$this->load->library('form_validation');
-		$this->form_validation->set_rules('name','Name','required');
-		$this->form_validation->set_rules('description','Description','required');
-		$this->form_validation->set_rules('price','Price','required');
-		
-		if ($this->form_validation->run() == true) {
-			$product = new Product();
-			$product->id = $id;
-			$product->name = $this->input->get_post('name');
-			$product->description = $this->input->get_post('description');
-			$product->price = $this->input->get_post('price');
-			
-			$this->load->model('product_model');
-			$this->product_model->update($product);
+	    		redirect('candystore/index', 'refresh');
+	    	}
+	    	else {
+	    		if ( !$fileUploadSuccess) {
+	    			$data['fileerror'] = $this->upload->display_errors();
+	    			$this->load->view('product/newForm.php',$data);
+	    			return;
+	    		}
+
+	    		$this->load->view('product/newForm.php');
+	    	}	
+	    }
+
+	    function read($id) {
+	    	$this->load->model('product_model');
+	    	$product = $this->product_model->get($id);
+	    	$data['product']=$product;
+	    	$this->load->view('product/read.php',$data);
+	    }
+
+	    function editForm($id) {
+	    	$this->load->model('product_model');
+	    	$product = $this->product_model->get($id);
+	    	$data['product']=$product;
+	    	$this->load->view('product/editForm.php',$data);
+	    }
+
+	    function update($id) {
+	    	$this->load->library('form_validation');
+	    	$this->form_validation->set_rules('name','Name','required');
+	    	$this->form_validation->set_rules('description','Description','required');
+	    	$this->form_validation->set_rules('price','Price','required');
+
+	    	if ($this->form_validation->run() == true) {
+	    		$product = new Product();
+	    		$product->id = $id;
+	    		$product->name = $this->input->get_post('name');
+	    		$product->description = $this->input->get_post('description');
+	    		$product->price = $this->input->get_post('price');
+
+	    		$this->load->model('product_model');
+	    		$this->product_model->update($product);
 			//Then we redirect to the index page again
-			redirect('candystore/index', 'refresh');
-		}
-		else {
-			$product = new Product();
-			$product->id = $id;
-			$product->name = set_value('name');
-			$product->description = set_value('description');
-			$product->price = set_value('price');
-			$data['product']=$product;
-			$this->load->view('product/editForm.php',$data);
-		}
-	}
-    	
-	function delete($id) {
-		$this->load->model('product_model');
-		
-		if (isset($id)) 
-			$this->product_model->delete($id);
-		
+	    		redirect('candystore/index', 'refresh');
+	    	}
+	    	else {
+	    		$product = new Product();
+	    		$product->id = $id;
+	    		$product->name = set_value('name');
+	    		$product->description = set_value('description');
+	    		$product->price = set_value('price');
+	    		$data['product']=$product;
+	    		$this->load->view('product/editForm.php',$data);
+	    	}
+	    }
+
+	    function delete($id) {
+	    	$this->load->model('product_model');
+
+	    	if (isset($id)) 
+	    		$this->product_model->delete($id);
+
 		//Then we redirect to the index page again
-		redirect('candystore/index', 'refresh');
+	    	redirect('candystore/index', 'refresh');
+	    }
+
+
+
+
+
 	}
-      
-   
-    
-    
-    
-}
 

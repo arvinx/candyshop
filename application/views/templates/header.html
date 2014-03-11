@@ -21,15 +21,29 @@
     <section class="top-bar-section">
       <!-- Right Nav Section -->
       <ul class="right">
-  <!--       if the user is logged in display "logout" otherwise "login"
-   -->      <li class="active"><a href="#">Login</a></li>
-  <!--       show drop down menu for reciepts, prev orders if logged in
-   -->      <li class="has-dropdown">
-          <a href="#">My Account</a>
-          <ul class="dropdown">
-            <li><a href="#">Reciepts</a></li>
-          </ul>
-        </li>
+  <!--       if the user is logged in display "logout" otherwise "login" -->      
+            <?php
+                if($this->session->userdata('logged_in')) {
+                  echo "<li class='active'>" . anchor('candystore/logout', 'Logout') . " </li>";
+                } else {
+                  echo "<li class='active'>" . anchor('candystore/loginForm', 'Login') . " </li>";
+                }
+            ?>
+  <!--       show drop down menu for reciepts, prev orders if logged in -->   
+            <?php
+              if($this->session->userdata('logged_in')) {
+                // $session_data = $this->session->userdata('logged_in');
+                // echo "<h1>Hi " . $session_data['username'] . "</h1>";
+                echo "<li class='has-dropdown'>";
+                echo "<a href='#''>My Account</a>";
+                echo "<ul class='dropdown'>";
+                echo "<li><a href='#''>Reciepts</a></li>";
+                echo "</ul>";
+                echo "</li>";
+              } else {
+                echo "<li class='active'>" . anchor('candystore/registerForm', 'Register') . " </li>";
+              }
+            ?>
       </ul>
     </section>
   </nav>

@@ -3,6 +3,10 @@
   		<br><br>
 		<h2 style='text-align: center'>Shop Candy</h2>
 		<?php 
+				if($this->session->userdata('logged_in')) {
+					$session_data = $this->session->userdata('logged_in');
+					echo "<h1>Hi " . $session_data['username'] . "</h1>";
+				}
 				echo "<p>" . anchor('candystore/newForm','Add New Candy') . "</p>";
 		 	  
 				echo "<ul class='small-block-grid-3'>";
