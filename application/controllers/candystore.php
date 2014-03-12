@@ -17,7 +17,6 @@ class CandyStore extends CI_Controller {
 
 	    function index() {
 	    	$this->load->model('product_model');
-
 	    	$products = $this->product_model->getAll();
 	    	$data['products']=$products;
 
@@ -28,10 +27,11 @@ class CandyStore extends CI_Controller {
 
 	    	$this->load->view('templates/header.html',$data);
 	    	$this->load->view('templates/footer.html',$data);
-	    	$this->load->view('product/list.php',$data);
+	    	print_r($this->session->userdata('cart'));
+	    	$this->load->view('product/index.php',$data);
 	    }
 
-	    function loginForm() {
+	    function login() {
 	    	$this->load->helper(array('form'));
 	    	$this->load->view('templates/header.html');
 	    	$this->load->view('templates/footer.html');
@@ -46,6 +46,7 @@ class CandyStore extends CI_Controller {
 
 	    function logout() {
 	    	$this->session->unset_userdata('logged_in');
+	    	$this->session->unset_userdata('cart');
 	    	session_destroy();
 	    	redirect('candystore/index', 'refresh');
 	    }
@@ -58,7 +59,7 @@ class CandyStore extends CI_Controller {
 
 	    	if($this->form_validation->run() == false)
 	    	{
-	    		redirect('candystore/loginForm', 'refresh');
+	    		redirect('candystore/login', 'refresh');
 	    	}
 	    	else
 	    	{
@@ -92,7 +93,7 @@ class CandyStore extends CI_Controller {
 	    	}
 	    }
 
-	    function registerForm() {
+	    function register() {
 	    	$this->load->helper(array('form'));
 	    	$this->load->view('templates/header.html');
 	    	$this->load->view('templates/footer.html');
@@ -138,10 +139,49 @@ class CandyStore extends CI_Controller {
 
 		    	$this->customer_model->insert($new_customer);
 
-	    		redirect('candystore/loginForm', 'refresh');
+	    		redirect('candystore/login', 'refresh');
 	    	}
 	    }
 
+	    function addToCart($product_id) {
+	    	if($this->session->userdata('logged_in')) {
+		    	$this->load->model('product_model');
+		    	$product = $this->product_model->get($product_id);
+		    	$data['product']=$product;
+
+		    	$cart_items = $this->session->userdata('cart');
+		    	if ($cart_items) {
+		    		if (array_key_exists($product_id, $cart_items)) {
+		    			$cart_items[$product_id] = $cart_items[$product_id] + 1;
+		    		} else {
+		    			$cart_items[$product_id] = 1;
+		    		}
+		    		$this->session->set_userdata('cart', $cart_items);
+		    	} else {
+		    		$cart_items = array($product_id => 0);
+		    		$this->session->set_userdata('cart', $cart_items);
+		    	}
+	    	} else {
+	    		redirect('candystore/login', 'refresh');
+	    	}
+	    }
+
+	    function cart() {
+	    	if($this->session->userdata('logged_in')) {
+	    		$this->load->model('product_model');
+	    		$cart_items = $this->session->userdata('cart');
+	    		$data['products']= array();
+				foreach ($cart_items as $item_id => $quantity) {
+					$product = $this->product_model->get($item_id);
+					$data['products'][] = $product;
+				}
+	    		$this->load->view('templates/header.html');
+	    		$this->load->view('templates/footer.html');
+	    		$this->load->view('customer/cart.php', $data);
+	    	} else {
+	    		redirect('candystore/login', refresh);
+	    	}
+	    }
 
 	    function create() {
 	    	$this->load->library('form_validation');

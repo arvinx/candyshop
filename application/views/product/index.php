@@ -8,17 +8,17 @@
 					echo "<h1>Hi " . $session_data['username'] . "</h1>";
 				}
 				echo "<p>" . anchor('candystore/newForm','Add New Candy') . "</p>";
-		 	  
 				echo "<ul class='small-block-grid-3'>";
 				
 				foreach ($products as $product) {
 					echo "<li>";
 					echo "<ul class='pricing-table'>";
-					  echo " <li class='title'>" . $product->name .  "</li>";
+					  echo "<li class='title'>" . $product->name .  "</li>";
 					  echo "<li class='price'>$" . $product->price . "</li>";
 					  echo "<li class='description'>" . $product->description . "</li>";
 					  echo "<li><img class='prod-img' src='" . base_url() . "images/product/" . $product->photo_url . "'  /></li>";
-					  echo "<li class='cta-button'><a class='button' href='#'>Add to Cart</a></li>";
+					  // echo "<li class='cta-button'><a class='button' href=''>Add to Cart</a></li>";
+					  echo "<li class='cta-button'>" . anchor("candystore/addToCart/$product->id", 'Add to Cart', array('class' => 'button')) . " </li>";
 					echo "</ul>";
 					// echo "<td>" . anchor("candystore/delete/$product->id",'Delete',"onClick='return confirm(\"Do you really want to delete this record?\");'") . "</td>";
 					// echo "<td>" . anchor("candystore/editForm/$product->id",'Edit') . "</td>";
@@ -27,9 +27,6 @@
 					echo "</li>";
 				}
 				echo "</ul>";
-		?>
-
-	
-
+		?>	
 	</div>
 </div>
