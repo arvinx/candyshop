@@ -38,12 +38,6 @@ class CandyStore extends CI_Controller {
 	    	$this->load->view('customer/loginForm.php');
 	    } 
 
-	    function newForm() {
-	    	$this->load->view('templates/header.html');
-	    	$this->load->view('templates/footer.html');
-	    	$this->load->view('product/newForm.php');
-	    }
-
 	    function logout() {
 	    	$this->session->unset_userdata('logged_in');
 	    	$this->session->unset_userdata('cart');
@@ -201,6 +195,15 @@ class CandyStore extends CI_Controller {
 	    	} else {
 	    		redirect('candystore/login', refresh);
 	    	}
+	    }
+
+
+	    //bellow can be used for admin panel code (adding products to inventory)
+
+		function newForm() {
+	    	$this->load->view('templates/header.html');
+	    	$this->load->view('templates/footer.html');
+	    	$this->load->view('product/newForm.php');
 	    }
 
 	    function create() {
