@@ -52,12 +52,10 @@ class CandyStore extends CI_Controller {
 	    	$this->form_validation->set_rules('username', 'Username', 'trim|required|max_length[16]|xss_clean');
 	    	$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]|max_length[16]|xss_clean|callback_check_database');
 
-	    	if($this->form_validation->run() == false)
-	    	{
+	    	if($this->form_validation->run() == false) {
+	    		$this->session->set_flashdata("login_error", "The username or password was incorrect");
 	    		redirect('candystore/login', 'refresh');
-	    	}
-	    	else
-	    	{
+	    	} else {
 	    		redirect('candystore/index', 'refresh');
 	    	}
 
@@ -68,8 +66,7 @@ class CandyStore extends CI_Controller {
 
 	    	$result = $this->customer_model->login($username, $password);
 
-	    	if($result)
-	    	{
+	    	if($result) {
 	    		$sess_array = array();
 	    		foreach($result as $row)
 	    		{
@@ -80,9 +77,7 @@ class CandyStore extends CI_Controller {
 	    			$this->session->set_userdata('logged_in', $sess_array);
 	    		}
 	    		return true;
-	    	}
-	    	else
-	    	{
+	    	} else {
 	    		$this->form_validation->set_message('check_database', 'Invalid username or password');
 	    		return false;
 	    	}
@@ -105,12 +100,9 @@ class CandyStore extends CI_Controller {
 	    	$this->form_validation->set_rules('last', 'Last', 'trim|required|max_length[24]|xss_clean');
 	    	
 
-	    	if($this->form_validation->run() == FALSE)
-	    	{
+	    	if($this->form_validation->run() == FALSE) {
 	    		$this->load->view('customer/registerForm');
-	    	}
-	    	else
-	    	{
+	    	} else {
 		    	$username = $this->input->post('username');
 		    	$email = $this->input->post('email');
 
