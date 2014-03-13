@@ -6,7 +6,7 @@
 	
 </style>
 
-<?php echo form_open('candystore/login_post'); ?>
+<?php echo form_open('candystore/loginPost'); ?>
  <label for="username">Username:</label>
  <input type="text" size="24" id="username" name="username" required />
  <br/>

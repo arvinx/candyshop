@@ -51,7 +51,7 @@ class CandyStore extends CI_Controller {
 	    	redirect('candystore/index', 'refresh');
 	    }
 
-	    function login_post() {
+	    function loginPost() {
 	    	$this->load->library('form_validation');
 
 	    	$this->form_validation->set_rules('username', 'Username', 'trim|required|max_length[16]|xss_clean');
@@ -100,7 +100,7 @@ class CandyStore extends CI_Controller {
 	    	$this->load->view('customer/registerForm.php');
 	    }
 
-	    function register_post() {
+	    function registerPost() {
 	    	$this->load->library('form_validation');
 
 	    	$this->form_validation->set_rules('username', 'Username', 'trim|required|max_length[16]|xss_clean');
@@ -121,12 +121,12 @@ class CandyStore extends CI_Controller {
 
 		    	$result = $this->customer_model->is_existing_email($email);
 		    	if ($result == true) {
-		    		$this->form_validation->set_message('register_post', 'Invalid username already exists');
+		    		$this->form_validation->set_message('registerPost', 'Invalid username already exists');
 		    		$this->load->view('customer/registerForm');
 		    	}
 		    	$result = $this->customer_model->is_existing_username($username);
 		    	if($result == true) {
-		    		$this->form_validation->set_message('register_post', 'Invalid email already exists');
+		    		$this->form_validation->set_message('registerPost', 'Invalid email already exists');
 		    		$this->load->view('customer/registerForm');
 		    	}
 		    	$this->load->model('customer');
@@ -145,10 +145,6 @@ class CandyStore extends CI_Controller {
 
 	    function addToCart($product_id) {
 	    	if($this->session->userdata('logged_in')) {
-		    	$this->load->model('product_model');
-		    	$product = $this->product_model->get($product_id);
-		    	$data['product']=$product;
-
 		    	$cart_items = $this->session->userdata('cart');
 		    	if ($cart_items) {
 		    		if (array_key_exists($product_id, $cart_items)) {
@@ -166,6 +162,30 @@ class CandyStore extends CI_Controller {
 	    	}
 	    }
 
+	    function removeFromCart($product_id) {
+	    	if($this->session->userdata('logged_in')) {
+		    	$cart_items = $this->session->userdata('cart');
+		    	if ($cart_items) {
+		    		if (array_key_exists($product_id, $cart_items)) {
+		    			unset($cart_items[$product_id]);
+		    			$this->session->set_userdata('cart', $cart_items);
+		    		}
+		    	}
+		    }
+	    }
+
+	    function updateQuantity($product_id) {
+			if($this->session->userdata('logged_in')) {
+		    	$cart_items = $this->session->userdata('cart');
+		    	if ($cart_items) {
+		    		if (array_key_exists($product_id, $cart_items)) {
+		    			$quantity = $this->input->get('quantity');
+		    			$cart_items[$product_id] = $quantity;
+		    			$this->session->set_userdata('cart', $cart_items);
+		    		}
+		    	}
+		    }
+	    }
 	    function cart() {
 	    	if($this->session->userdata('logged_in')) {
 	    		$this->load->model('product_model');

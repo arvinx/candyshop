@@ -17,8 +17,8 @@
 					  echo "<li class='price'>$" . $product->price . "</li>";
 					  echo "<li class='description'>" . $product->description . "</li>";
 					  echo "<li><img class='prod-img' src='" . base_url() . "images/product/" . $product->photo_url . "'  /></li>";
-					  // echo "<li class='cta-button'><a class='button' href=''>Add to Cart</a></li>";
-					  echo "<li class='cta-button'>" . anchor("candystore/addToCart/$product->id", 'Add to Cart', array('class' => 'button')) . " </li>";
+					  echo "<li class='cta-button'><button class='small' id='add-cart-btn' value=" . $product->id . ">Add to Cart</button></li>";
+					  //echo "<li class='cta-button'>" . anchor("candystore/addToCart/$product->id", 'Add to Cart', array('class' => 'button')) . " </li>";
 					echo "</ul>";
 					// echo "<td>" . anchor("candystore/delete/$product->id",'Delete',"onClick='return confirm(\"Do you really want to delete this record?\");'") . "</td>";
 					// echo "<td>" . anchor("candystore/editForm/$product->id",'Edit') . "</td>";
@@ -30,3 +30,5 @@
 		?>	
 	</div>
 </div>
+
+<script src="<?= base_url() ?>/js/addcandy.js"></script>

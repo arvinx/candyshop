@@ -6,7 +6,7 @@ input { display: block;}
 
 </style>
 
-<?php echo form_open('candystore/register_post'); ?>
+<?php echo form_open('candystore/registerPost'); ?>
 <label for="username">Username:</label>
 <input type="text" maxlength="16" id="username" name="username" required />
 <br/>
