@@ -7,10 +7,10 @@ class CandyStore extends CI_Controller {
     		// Call the Controller constructor
 		parent::__construct();
 
-
 		$config['upload_path'] = './images/product/';
 		$config['allowed_types'] = 'gif|jpg|png';
     	$this->load->library('upload', $config);
+    	$this->upload->initialize($config);
     	$this->load->model('customer_model');
 	    	
 	}
@@ -133,6 +133,7 @@ class CandyStore extends CI_Controller {
 
 		    	$this->customer_model->insert($new_customer);
 
+		    	//TODO: Redict to main page, and start the session here?
 	    		redirect('candystore/login', 'refresh');
 	    	}
 	    }
@@ -230,7 +231,7 @@ class CandyStore extends CI_Controller {
 	    		redirect('candystore/index', 'refresh');
 	    	}
 	    	else {
-	    		if ( !$fileUploadSuccess) {
+	    		if (!$fileUploadSuccess) {
 	    			$data['fileerror'] = $this->upload->display_errors();
 	    			$this->load->view('product/newForm.php',$data);
 	    			return;

@@ -23,9 +23,13 @@
 	echo form_input('price',set_value('price'),"required");
 	
 	echo form_label('Photo');
+
+	echo form_open_multipart('upload/do_upload');
 	
 	if(isset($fileerror))
-		echo $fileerror;	
+		echo $fileerror;
+
+	echo form_open_multipart('candystore/create');
 ?>	
 	<input type="file" name="userfile" size="20" />
 	
