@@ -27,7 +27,8 @@ class CandyStore extends CI_Controller {
 
 	    	$this->load->view('templates/header.html',$data);
 	    	$this->load->view('templates/footer.html',$data);
-	    	print_r($this->session->userdata('cart'));
+	    	//print_r($this->session->userdata('cart'));
+	    	error_log(json_encode($this->session->userdata('cart')));
 	    	$this->load->view('product/index.php',$data);
 	    }
 
@@ -149,7 +150,7 @@ class CandyStore extends CI_Controller {
 		    		}
 		    		$this->session->set_userdata('cart', $cart_items);
 		    	} else {
-		    		$cart_items = array($product_id => 0);
+		    		$cart_items = array($product_id => 1);
 		    		$this->session->set_userdata('cart', $cart_items);
 		    	}
 	    	} else {
@@ -169,12 +170,13 @@ class CandyStore extends CI_Controller {
 		    }
 	    }
 
-	    function updateQuantity($product_id) {
+	    function updateQuantity() {
 			if($this->session->userdata('logged_in')) {
 		    	$cart_items = $this->session->userdata('cart');
 		    	if ($cart_items) {
+		    		$product_id = $this->input->get_post('product_id');
+		    		$quantity = $this->input->get_post('quantity');
 		    		if (array_key_exists($product_id, $cart_items)) {
-		    			$quantity = $this->input->get('quantity');
 		    			$cart_items[$product_id] = $quantity;
 		    			$this->session->set_userdata('cart', $cart_items);
 		    		}
@@ -186,10 +188,14 @@ class CandyStore extends CI_Controller {
 	    		$this->load->model('product_model');
 	    		$cart_items = $this->session->userdata('cart');
 	    		$data['products']= array();
-				foreach ($cart_items as $item_id => $quantity) {
-					$product = $this->product_model->get($item_id);
-					$data['products'][] = $product;
-				}
+	    		if ($cart_items) {
+	    			foreach ($cart_items as $item_id => $quantity) {
+						$product = $this->product_model->get($item_id);
+						$data['products'][] = $product;
+					}
+	    		} else {
+	    			$data['empty_cart'] = true;
+	    		}
 	    		$this->load->view('templates/header.html');
 	    		$this->load->view('templates/footer.html');
 	    		$this->load->view('customer/cart.php', $data);
