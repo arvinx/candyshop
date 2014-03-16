@@ -1,4 +1,3 @@
-
 <br><br>
 <div class="row">
 	<div class="medium-5 columns">
@@ -14,7 +13,7 @@
 		<br/>
 
 		<label for="email">Email:</label>
-		<input type="email" maxlength="45" id="email" name="email" required />
+		<input type="email" pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?" maxlength="45" id="email" name="email" required />
 		<br/>
 
 		<label for="first">First Name:</label>
