@@ -27,8 +27,8 @@
 						echo "<td>$" . $session_cart_items[$product->id]*$product->price . "</td>";
 						echo "<td class='delete-item' style='display: none'><img class='delete-btn' alt=" . $product->id . " width=20 height=20 src=" . base_url() . "/images/remove.png /></td>";
 						$total += $session_cart_items[$product->id]*$product->price;
-						$this->session->set_userdata('total', $total);
 					}
+					$this->session->set_userdata('total', $total);
 				?>
 			</tbody>
 		</table>
@@ -37,8 +37,9 @@
 		?>
 		<br><br>
 		<button id="edit-btn" class="button tiny">Edit</button>
-		<button id="checkout-btn" class="button tiny">Checkout</button>
-
+		<?php
+			echo anchor('candystore/checkoutttttttt','Checkout', array('class' => 'button tiny'));
+		?>
 	</div>
 </div>
 

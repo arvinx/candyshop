@@ -5,9 +5,9 @@
 		<?php 
 				if($this->session->userdata('logged_in')) {
 					$session_data = $this->session->userdata('logged_in');
-					echo "<h1>Hi " . $session_data['username'] . "</h1>";
+					echo "<h3>Hi " . $session_data['first'] . " " . $session_data['last'] . "</h1>";
 				}
-				echo "<p>" . anchor('candystore/newForm','Add New Candy') . "</p>";
+
 				echo "<ul class='small-block-grid-3'>";
 				
 				foreach ($products as $product) {

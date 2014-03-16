@@ -44,7 +44,7 @@
                 // echo "</ul>";
                 // echo "</li>";
                 echo "<li class='active' id='view-cart'>" . anchor('candystore/cart', 'View Cart') . " </li>";
-              } else {
+              } else if(!$this->session->userdata('admin')) {
                 echo "<li class='active'>" . anchor('candystore/register', 'Register') . " </li>";
               }
             ?>
