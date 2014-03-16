@@ -232,13 +232,14 @@ class CandyStore extends CI_Controller {
 			{
 				$sess_array = array(
 					'id' => $row->id,
-					'username' => $row->login
+					'username' => $row->login,
+					'first' => $row->first,
+					'last' => $row->last
 					);
 				$this->session->set_userdata('logged_in', $sess_array);
 			}
 			return true;
 		} else {
-			$this->form_validation->set_message('check_database', 'Invalid username or password');
 			return false;
 		}
 	}
