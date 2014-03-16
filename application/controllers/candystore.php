@@ -157,7 +157,8 @@ class CandyStore extends CI_Controller {
 				$this->session->set_userdata('cart', $cart_items);
 			}
 		} else {
-			redirect('candystore/login', 'refresh');
+			$this->output->set_content_type('application/json');
+			$this->output->set_output(json_encode(array('logged_on'=> 'false')));
 		}
 	}
 
