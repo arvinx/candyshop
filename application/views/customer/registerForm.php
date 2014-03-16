@@ -24,6 +24,13 @@
 		<label for="last">Last Name:</label>
 		<input type="text" maxlength="24" id="last" name="last" required />
 		<br/>
+		<?php
+			$warning = $this->session->flashdata("register_error");
+			if ($warning) {
+				echo " <div data-alert class='alert-box' stlye='background-colour: red'>" . $warning . "</div>";
+			}
+		?>
+		<br>
 		<input type="submit" class="button small" value="Register"/>
 	</form>
 </div>

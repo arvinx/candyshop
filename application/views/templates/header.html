@@ -23,7 +23,10 @@
       <ul class="right">
   <!--       if the user is logged in display "logout" otherwise "login" -->      
             <?php
-                if($this->session->userdata('logged_in')) {
+                if($this->session->userdata('admin')) {
+                  echo "<li class='active'>" . anchor('candystore/adminpanel', 'Admin Panel') . " </li>";
+                }
+                if($this->session->userdata('logged_in') || $this->session->userdata('admin')) {
                   echo "<li class='active'>" . anchor('candystore/logout', 'Logout') . " </li>";
                 } else {
                   echo "<li class='active'>" . anchor('candystore/login', 'Login') . " </li>";

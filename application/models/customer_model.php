@@ -39,7 +39,16 @@ Class Customer_model extends CI_Model
     'email' => $new_customer->email,
     'login' => $new_customer->username,
     'password' => $new_customer->password)); //MD5 pw
-}
+ }
+
+ function getAll() {  
+  $query = $this->db->get('customer');
+  return $query->result('Customer');
+ }  
+
+ function delete($id) {
+  return $this->db->delete("customer",array('id' => $id ));
+ }
 
 }
 ?>

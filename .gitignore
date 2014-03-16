@@ -1,4 +1,5 @@
 database.php
+*.xml
 */product/*.jpg
 */product/*.png
 */product/*.jpeg

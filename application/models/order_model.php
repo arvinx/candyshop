@@ -17,5 +17,11 @@ Class Order_model extends CI_Model
       'customer_id' => $customer_id));
  }
 
+ function getAll()
+ {  
+    $query = $this->db->get('order');
+    return $query->result('Order');
+ } 
+
 }
 ?>
