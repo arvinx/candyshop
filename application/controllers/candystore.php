@@ -157,6 +157,7 @@ class CandyStore extends CI_Controller {
 				$this->session->set_userdata('cart', $cart_items);
 			}
 		} else {
+			$this->session->set_flashdata("login_error", "Please log in to add an item to your cart");
 			$this->output->set_content_type('application/json');
 			$this->output->set_output(json_encode(array('logged_on'=> 'false')));
 		}
