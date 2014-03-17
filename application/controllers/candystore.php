@@ -4,7 +4,7 @@ class CandyStore extends CI_Controller {
 
 
 	function __construct() {
-    		// Call the Controller constructor
+		// Call the Controller constructor
 		parent::__construct();
 
 		$config['upload_path'] = './images/product/';
@@ -12,7 +12,7 @@ class CandyStore extends CI_Controller {
 		$this->load->library('upload', $config);
 		$this->upload->initialize($config);
 		$this->load->model('customer_model');
-
+		$this->load->model('order_model');
 	}
 
 	function index() {
@@ -63,29 +63,6 @@ class CandyStore extends CI_Controller {
 			redirect('candystore/index', 'refresh');
 		}
 
-	}
-
-	function check_database($password) {
-		$username = $this->input->post('username');
-
-		$result = $this->customer_model->login($username, $password);
-
-		if($result) {
-			$sess_array = array();
-			foreach($result as $row)
-			{
-				$sess_array = array(
-					'id' => $row->id,
-					'username' => $row->login,
-					'first' => $row->first,
-					'last' => $row->last
-					);
-				$this->session->set_userdata('logged_in', $sess_array);
-			}
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	function register() {
@@ -144,6 +121,131 @@ class CandyStore extends CI_Controller {
 		}
 	}
 
+	function receipt() {
+		$this->load->helper(array('form'));
+		$this->load->view('templates/header.html');
+		$this->load->view('templates/footer.html');
+		$this->load->view('checkout/ordersucess.php');
+	} 
+
+	function paymentForm() {
+		if($this->session->userdata('logged_in')) {
+			$this->load->helper(array('form'));
+			$data = $this->_getCartItems();
+			$this->load->view('templates/header.html');
+			$this->load->view('templates/footer.html');
+			$this->load->view('checkout/payment.php', $data);
+		} else {
+			redirect('candystore/login', refresh);
+		}
+	}
+
+	function paymentPost() {
+		$this->load->library('form_validation');
+		//Actual valid credit cards
+		//$this->form_validation->set_rules('creditcard_number', 'Credit Card', 'trim|required|xss_clean|callback__luhn_check');
+		//Check for 16 digits
+		$this->form_validation->set_rules('creditcard_number', 'Credit Card', 'trim|required|xss_clean|callback__checkCC');
+		$this->form_validation->set_rules('creditcard_year', 'Expiry Year', 'trim|required|xss_clean|callback__checkExpYear');
+		$month = $this->input->get_post('creditcard_year');
+		if($month > date('Y')){
+			$this->form_validation->set_rules('creditcard_month', 'Expiry Month', 'trim|required|xss_clean');
+		} else if ($month == date('Y')) {
+			$this->form_validation->set_rules('creditcard_month', 'Expiry Month', 'trim|required|xss_clean|callback__checkExpMonth');
+		}
+
+		if($this->form_validation->run() == FALSE) {
+			redirect('candystore/paymentForm');
+		} else {
+			$session_data = $this->session->userdata('logged_in');
+			$this->load->model('order');
+			$new_order = new Order();
+			$new_order->customer_id = $session_data['id'];		    	
+			$new_order->total = $this->session->userdata('total');
+			$new_order->creditcard_number = $this->input->get_post('creditcard_number');
+			$new_order->creditcard_month = $this->input->get_post('creditcard_month');
+			$new_order->creditcard_year = $this->input->get_post('creditcard_year');
+
+			$this->order_model->insert($new_order);
+
+		    	//TODO: Change to final page
+			redirect('candystore/receipt', 'refresh');
+		}
+	}
+
+	function _checkCC($cc){
+		if (preg_match('/[0-9]{16}/', $cc)) {
+			return true;
+		} else {
+			$this->session->set_flashdata('payment_error', 'Please enter a valid 16 digit credit card number.');
+			return false;
+		}
+	}
+
+	function _luhn_check($number) {
+
+		$number=preg_replace('/\D/', '', $number);
+
+		$number_length=strlen($number);
+		$parity=$number_length % 2;
+
+		$total=0;
+		for ($i=0; $i<$number_length; $i++) {
+			$digit=$number[$i];
+			if ($i % 2 == $parity) {
+				$digit*=2;
+				if ($digit > 9) {
+					$digit-=9;
+				}
+			}
+			$total+=$digit;
+		}
+		return ($total % 10 == 0) ? TRUE : FALSE;
+	}
+
+	function _checkExpMonth($em) {
+		if (preg_match('/[0-9]{2}/', $em)) {
+			if ($em <= 12){
+				if($em >= date('m')){
+					return true;
+				}
+			}
+		}
+		$this->session->set_flashdata('payment_error', 'Your card has expired, or you need to enter a valid month.');
+		return false;
+	}
+
+	function _checkExpYear($ey) {
+		if (preg_match('/[0-9]{4}/', $ey)) {
+			return true;
+		}
+		$this->session->set_flashdata('payment_error', 'Your card has expired or you need to enter a valid year.');
+		return false;
+	}
+
+	function check_database($password) {
+		$username = $this->input->post('username');
+
+		$result = $this->customer_model->login($username, $password);
+
+		if($result) {
+			$sess_array = array();
+			foreach($result as $row)
+			{
+				$sess_array = array(
+					'id' => $row->id,
+					'username' => $row->login,
+					'first' => $row->first,
+					'last' => $row->last
+					);
+				$this->session->set_userdata('logged_in', $sess_array);
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	function addToCart($product_id) {
 		if($this->session->userdata('logged_in')) {
 			$cart_items = $this->session->userdata('cart');
@@ -177,6 +279,32 @@ class CandyStore extends CI_Controller {
 		}
 	}
 
+	function _getCartItems(){
+		$this->load->model('product_model');
+		$cart_items = $this->session->userdata('cart');
+		$data['products']= array();
+		if ($cart_items) {
+			foreach ($cart_items as $item_id => $quantity) {
+				$product = $this->product_model->get($item_id);
+				$data['products'][] = $product;
+			}
+		} else {
+			$data['empty_cart'] = true;
+		}
+		return $data;
+	}
+
+	function cart() {
+		if($this->session->userdata('logged_in')) {
+			$data = $this->_getCartItems();
+			$this->load->view('templates/header.html');
+			$this->load->view('templates/footer.html');
+			$this->load->view('customer/cart.php', $data);
+		} else {
+			redirect('candystore/login', 'refresh');
+		}
+	}
+
 	function updateQuantity() {
 		if($this->session->userdata('logged_in')) {
 			$cart_items = $this->session->userdata('cart');
@@ -190,30 +318,8 @@ class CandyStore extends CI_Controller {
 			}
 		}
 	}
-	function cart() {
-		if($this->session->userdata('logged_in')) {
-			$this->load->model('product_model');
-			$cart_items = $this->session->userdata('cart');
-			$data['products']= array();
-			if ($cart_items) {
-				foreach ($cart_items as $item_id => $quantity) {
-					$product = $this->product_model->get($item_id);
-					$data['products'][] = $product;
-				}
-			} else {
-				$data['empty_cart'] = true;
-			}
-			$this->load->view('templates/header.html');
-			$this->load->view('templates/footer.html');
-			$this->load->view('customer/cart.php', $data);
-		} else {
-			redirect('candystore/login', 'refresh');
-		}
-	}
 
-
-	    //bellow can be used for admin panel code (adding products to inventory)
-
+    //bellow can be used for admin panel code (adding products to inventory)
 	function adminpanel() {
 		if (!$this->session->userdata("admin")) {
 			$this->session->set_flashdata("login_error", "Please login to use admin feature");

@@ -37,9 +37,8 @@
 		?>
 		<br><br>
 		<button id="edit-btn" class="button tiny">Edit</button>
-		<?php
-			echo anchor('candystore/checkoutttttttt','Checkout', array('class' => 'button tiny'));
-		?>
+		<a id="checkout.btn" class="button tiny" href="<?php echo site_url('/candystore/paymentForm') ?>">Check Out</a>
+
 	</div>
 </div>
 
