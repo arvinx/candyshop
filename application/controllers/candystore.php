@@ -113,8 +113,10 @@ class CandyStore extends CI_Controller {
 				$this->session->set_flashdata("register_error", "The username cannot be admin");
 				redirect('candystore/register', 'refresh');
 			}
+
 			$email = $this->input->post('email');
-			if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+			$this->load->helper('email');
+			if (valid_email($email) != 1) {
 				$this->session->set_flashdata('register_error', 'Invalid email format');
 				redirect('candystore/register', 'refresh');
 			}

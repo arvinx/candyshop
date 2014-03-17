@@ -12,7 +12,7 @@
 		<?php
 		$warning = $this->session->flashdata("login_error");
 		if ($warning) {
-			echo " <div data-alert class='alert-box' stlye='background-colour: red'>" . $warning . "</div>";
+			echo " <div data-alert class='alert-box'>" . $warning . "</div>";
 		}
 		?>
 		<br>

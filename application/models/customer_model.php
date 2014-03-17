@@ -17,7 +17,8 @@ Class Customer_model extends CI_Model
  function is_existing_email($email) {
    $query = $this->db->get_where('customer',array('email' => $email));
    $res = $query->result();
-   if($query->num_rows() > 0) {
+   error_log("NUM ROWS EMAIL: " . $query->num_rows() . $res);
+   if($query->num_rows() == 0) {
      return false;
    }
    return true;
@@ -27,7 +28,7 @@ Class Customer_model extends CI_Model
    $query = $this->db->get_where('customer',array('login' => $username));
    $res = $query->result();
 
-   if($query->num_rows() > 0) {
+   if($query->num_rows() == 0) {
      return false;
    }
    return true;

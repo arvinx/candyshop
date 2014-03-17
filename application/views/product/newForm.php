@@ -33,7 +33,7 @@
 		<?php 	
 		$warning = $this->session->flashdata("product_form_error");
 		if ($warning) {
-			echo " <div data-alert class='alert-box' stlye='background-colour: red'>" . $warning . "</div>";
+			echo " <div data-alert class='alert-box'>" . $warning . "</div>";
 		}
 		echo form_submit('submit', 'Create');
 		echo form_close();
