@@ -55,11 +55,18 @@ class CandyStore extends CI_Controller {
 
 		if ($this->input->post('username') == 'admin' &&  $this->input->post('password') == '123123') {
 			$this->session->set_userdata('admin', 'true');
+			$sess_array = array(
+				'id' => "99999",
+				'username' => "admin",
+				'first' => "admin",
+				'last' => ""
+				);
+			$this->session->set_userdata('logged_in', $sess_array);
 			redirect('candystore/adminpanel', 'refresh');
 		}
 
 		if($this->form_validation->run() == false) {
-			$this->session->set_flashdata("login_error", "The username or password was incorrect");
+			$this->session->set_flashdata("login_error", "The username or password was incorrect, or the account does not exist!");
 			redirect('candystore/login', 'refresh');
 		} else {
 			redirect('candystore/index', 'refresh');
@@ -227,7 +234,7 @@ class CandyStore extends CI_Controller {
 
 	function _constructMailReceipt($user, $products){
 		$message = "<html><body><div class='row'><div class='column'><h2>Order Reciept</h2></div><table><thead><tr><th width='50'>Product</th><th width='250'>Description</th><th width='100'>Unit Price</th><th width='50'>Quantity</th>
-				</tr></thead><tbody>";
+		</tr></thead><tbody>";
 
 		foreach ($products as $order) {
 			$message = $message . "<tr><td>" . $order->name .  "</td><td>" . $order->description . "</td><td>" . $order->price . "</td><td>" . $order->quantity . "</td></tr>";

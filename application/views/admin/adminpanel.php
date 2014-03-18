@@ -34,9 +34,6 @@
 					<th width='250'>Date</th>
 					<th width='250'>Time</th>
 					<th width='250'>Total</th>
-					<!--<th width='250'>CC Number</th>
-					 <th width='250'>View Cart</th> -->
-					<th width='50'>Delete</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -44,12 +41,9 @@
 					foreach ($orders as $order) {
 						echo "<tr>";
 						echo "<td>" . $order->customer_id .  "</td>";
-						echo "<td>" . $order->date .  "</td>";
-						echo "<td>" . $order->time .  "</td>";
+						echo "<td>" . $order->order_date .  "</td>";
+						echo "<td>" . $order->order_time .  "</td>";
 						echo "<td>$" . $order->total .  "</td>";
-						//echo "<td>" . $order->creditcard_number .  "</td>";
-						//echo "<td>" . anchor("candystore/viewOrder/$order->id",'View') . "</td>";
-						echo "<td class='order delete-item' align='center'><img class='delete-btn' alt=" . $customer->id . " width=20 height=20 src=" . base_url() . "/images/remove.png /></td>";
 						echo "</tr>";
 					}
 				?>

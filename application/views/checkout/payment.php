@@ -50,7 +50,7 @@
 		<br/>
 
 		<label for="creditcard_year">Credit Card Expiry Year:</label>
-		<input type="text" pattern="[0-9]{4}" placeholder="YY" maxlength="4" id="creditcard_year" name="creditcard_year" required />
+		<input type="text" pattern="[0-9]{4}" placeholder="YYYY" maxlength="4" id="creditcard_year" name="creditcard_year" required />
 		<br/>
 		<?php
 			$warning = $this->session->flashdata("payment_error");
