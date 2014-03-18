@@ -55,13 +55,6 @@ class CandyStore extends CI_Controller {
 
 		if ($this->input->post('username') == 'admin' &&  $this->input->post('password') == '123123') {
 			$this->session->set_userdata('admin', 'true');
-			$sess_array = array(
-				'id' => "99999",
-				'username' => "admin",
-				'first' => "admin",
-				'last' => ""
-				);
-			$this->session->set_userdata('logged_in', $sess_array);
 			redirect('candystore/adminpanel', 'refresh');
 		}
 
@@ -412,6 +405,25 @@ class CandyStore extends CI_Controller {
 		$this->load->view('templates/header.html',$data);
 		$this->load->view('templates/footer.html',$data);
 		$this->load->view('admin/adminpanel.php',$data);
+	}
+
+	function displayOrder($orderId) {
+		$this->load->model('orderitem');
+		$this->load->model('product');
+		$this->load->model('product_model');
+		$this->load->model('order');		
+		$orderitems = $this->orderitem_model->getItems($orderId);
+		$orderitems_withnames = array();
+		foreach ($orderitems as $orderitem) {
+			$product = $this->product_model->get($orderitem->product_id);
+			array_push($orderitems_withnames, array($orderitem->quantity, $product->name, $product->price));
+		}
+		$order = $this->order_model->get($orderId);
+		$data['orderinfo'] = $order;
+		$data['orderitems_withnames'] = $orderitems_withnames;
+		$this->load->view('templates/header.html', $data);
+		$this->load->view('templates/footer.html', $data);
+		$this->load->view('admin/showorder.php', $data);		
 	}
 
 	function newForm() {

@@ -27,9 +27,11 @@
 		</table>
 		<br><br>
 		<h3>Orders</h3>
+		<h5>Click the order number for more information</h5>
 		<table>
 			<thead>
 				<tr>
+					<th widht='50'>ID</th>
 					<th width='250'>Customer ID</th>
 					<th width='250'>Date</th>
 					<th width='250'>Time</th>
@@ -40,6 +42,7 @@
 				<?php
 					foreach ($orders as $order) {
 						echo "<tr>";
+						echo "<td>" . anchor("candystore/displayOrder/$order->id", $order->id) . "</td>";
 						echo "<td>" . $order->customer_id .  "</td>";
 						echo "<td>" . $order->order_date .  "</td>";
 						echo "<td>" . $order->order_time .  "</td>";
@@ -50,7 +53,7 @@
 			</tbody>
 		</table>
 		<h3>Customers</h3>
-		<p>*Deleting a Customer deletes their Orders (and OrderItems)</p>
+		<h5>*Deleting a Customer deletes their Orders (and OrderItems)</h5>
 		<table>
 			<thead>
 				<tr>

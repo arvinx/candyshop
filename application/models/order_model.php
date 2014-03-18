@@ -21,11 +21,15 @@ function delete($customer_id) {
       'customer_id' => $customer_id));
 }
 
-function getAll()
-{  
+function getAll() {  
     $query = $this->db->get('`order`');
     return $query->result('Order');
-} 
+}
+    
+function get($id) {
+    $query = $this->db->get_where('`order`', array('id' => $id));
+    return $query->row(0,'Order');
+}
 
 }
 ?>

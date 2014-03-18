@@ -1,11 +1,7 @@
-<html>
-<body>
-	<div class='row'>
-		<div class='column'>
-			<h2>Order Reciept</h2>
-
-		</div>
-
+<br><br>
+<div class="row">
+	<div class="medium-5 columns">
+		<h2>Order Reciept</h2>
 		<table>
 			<thead>
 				<tr>
@@ -17,7 +13,7 @@
 				</tr>
 			</thead>
 			<tbody>
- 				<?php
+				<?php
 				foreach ($products as $order) {
 					echo "<tr>";
 					echo "<td>" . $this->session->userdata['orderDate'] . "</td>";
@@ -33,7 +29,5 @@
 		<br>
 		<?php echo "<h4>Total: </h4><h3> $" . $this->session->userdata['total'] . "</h3>";?>
 		<button onClick="window.print()">Print this receipt</button>
-
 	</div>
-</body>
-</html>
+</div>
