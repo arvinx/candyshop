@@ -29,6 +29,7 @@
 		</table>
 		<br>
 		<?php echo "<h4>Total: </h4><h3> $" . $this->session->userdata['total'] . "</h3>";?>
+		<button onClick="window.print()">Print this receipt</button>
 
 	</div>
 </body>
