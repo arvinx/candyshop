@@ -204,6 +204,7 @@ class CandyStore extends CI_Controller {
 	function displayReceipt(){
 		$products = $this->_getCartItems();
 		$data['products'] = $products['products'];
+		$date['orderDate'] = $this->session->userdata['orderDate'];
 		$this->load->view('templates/header.html');
 		$this->load->view('templates/footer.html');
 		$this->load->view('checkout/ordersucess.php', $data);
@@ -233,11 +234,11 @@ class CandyStore extends CI_Controller {
 	}
 
 	function _constructMailReceipt($user, $products){
-		$message = "<html><body><div class='row'><div class='column'><h2>Order Reciept</h2></div><table><thead><tr><th width='50'>Product</th><th width='250'>Description</th><th width='100'>Unit Price</th><th width='50'>Quantity</th>
+		$message = "<html><body><div class='row'><div class='column'><h2>Order Reciept</h2></div><table><thead><tr><th width='100'>Date</th><th width='50'>Product</th><th width='250'>Description</th><th width='100'>Unit Price</th><th width='50'>Quantity</th>
 		</tr></thead><tbody>";
 
 		foreach ($products as $order) {
-			$message = $message . "<tr><td>" . $order->name .  "</td><td>" . $order->description . "</td><td>" . $order->price . "</td><td>" . $order->quantity . "</td></tr>";
+			$message = $message . "<tr><td>" . $this->session->userdata['orderDate'] . "</td><td>" . $order->name .  "</td><td>" . $order->description . "</td><td>" . $order->price . "</td><td>" . $order->quantity . "</td></tr>";
 		}
 
 		$message = $message . "</tbody></table><br><h4>Total: </h4><h3> $" . $this->session->userdata['total'] . "</h3></div></body></html>";
