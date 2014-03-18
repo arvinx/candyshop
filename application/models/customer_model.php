@@ -51,5 +51,10 @@ Class Customer_model extends CI_Model
   return $this->db->delete("customer",array('id' => $id ));
  }
 
+ function getCustomer($id) {
+  $query = $this->db->get_where('customer', array('id' => $id));
+  return $query->result(0);
+ }
+
 }
 ?>

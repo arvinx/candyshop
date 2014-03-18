@@ -4,5 +4,6 @@ class Product  {
 	public $name;
 	public $description;
 	public $price;
-	public $photo_url;	
+	public $photo_url;
+	public $quantity;	
 }

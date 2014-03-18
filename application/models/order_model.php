@@ -2,7 +2,7 @@
 Class Order_model extends CI_Model
 {
  function insert($order) {
-   return $this->db->insert("order", array(
+   return $this->db->insert("`order`", array(
     'customer_id' => $order->customer_id,
     'order_date' => date("Y/m/d"),
     'order_time' => date("H:i:s"),
@@ -13,13 +13,13 @@ Class Order_model extends CI_Model
  }
 
  function delete($customer_id) {
-    return $this->db->delete("order", array(
+    return $this->db->delete("`order`", array(
       'customer_id' => $customer_id));
  }
 
  function getAll()
  {  
-    $query = $this->db->get('order');
+    $query = $this->db->get('`order`');
     return $query->result('Order');
  } 
 

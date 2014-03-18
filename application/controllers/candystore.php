@@ -13,6 +13,8 @@ class CandyStore extends CI_Controller {
 		$this->upload->initialize($config);
 		$this->load->model('customer_model');
 		$this->load->model('order_model');
+		$this->load->model('orderitem_model');
+		$this->load->helper('date');
 	}
 
 	function index() {
@@ -62,7 +64,29 @@ class CandyStore extends CI_Controller {
 		} else {
 			redirect('candystore/index', 'refresh');
 		}
+	}
 
+	function check_database($password) {
+		$username = $this->input->post('username');
+
+		$result = $this->customer_model->login($username, $password);
+
+		if($result) {
+			$sess_array = array();
+			foreach($result as $row)
+			{
+				$sess_array = array(
+					'id' => $row->id,
+					'username' => $row->login,
+					'first' => $row->first,
+					'last' => $row->last
+					);
+				$this->session->set_userdata('logged_in', $sess_array);
+			}
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	function register() {
@@ -121,13 +145,6 @@ class CandyStore extends CI_Controller {
 		}
 	}
 
-	function receipt() {
-		$this->load->helper(array('form'));
-		$this->load->view('templates/header.html');
-		$this->load->view('templates/footer.html');
-		$this->load->view('checkout/ordersucess.php');
-	} 
-
 	function paymentForm() {
 		if($this->session->userdata('logged_in')) {
 			$this->load->helper(array('form'));
@@ -136,7 +153,7 @@ class CandyStore extends CI_Controller {
 			$this->load->view('templates/footer.html');
 			$this->load->view('checkout/payment.php', $data);
 		} else {
-			redirect('candystore/login', refresh);
+			redirect('candystore/login', 'refresh');
 		}
 	}
 
@@ -168,8 +185,73 @@ class CandyStore extends CI_Controller {
 
 			$this->order_model->insert($new_order);
 
-		    	//TODO: Change to final page
-			redirect('candystore/receipt', 'refresh');
+			$order_id = $this->db->insert_id();
+			$this->_addOrderItems($order_id);
+			$this->_sendEmailReceipt();
+
+			redirect('candystore/displayReceipt', 'refresh');
+
+		}
+	}
+
+	function displayReceipt(){
+		$products = $this->_getCartItems();
+		$data['products'] = $products['products'];
+		$this->load->view('templates/header.html');
+		$this->load->view('templates/footer.html');
+		$this->load->view('checkout/ordersucess.php', $data);
+	}
+
+	function _sendEmailReceipt(){
+		$products = $this->_getCartItems();
+		$data['products'] = $products['products'];
+		$curr = $this->session->userdata['logged_in'];
+		$user = $this->customer_model->getCustomer($curr['id']);
+		$this->load->library('email');
+		$config['protocol'] = 'sendmail';
+		$config['mailpath'] = '/usr/sbin/sendmail';
+		$config['smtp_host'] = 'smtp.gmail.com';
+		$config['smtp_user'] = 'candystorecsc309@gmail.com';
+		$config['smtp_pass'] =  'csc123456789';
+		$config['smtp_port'] = '465';
+		$config['mailtype'] = 'html';
+		$this->email->initialize($config);
+
+		$this->email->from('candystorecsc309@gmail.com', 'Candy Store');
+		$this->email->to($user[0]['email']); 
+		$this->email->subject('Candy Store Order Receipt');
+		$message = $this->_constructMailReceipt($user[0], $data['products']);
+		$this->email->message($message);
+		$this->email->send();
+	}
+
+	function _constructMailReceipt($user, $products){
+		$message = "<html><body><div class='row'><div class='column'><h2>Order Reciept</h2></div><table><thead><tr><th width='50'>Product</th><th width='250'>Description</th><th width='100'>Unit Price</th><th width='50'>Quantity</th>
+				</tr></thead><tbody>";
+
+		foreach ($products as $order) {
+			$message = $message . "<tr><td>" . $order->name .  "</td><td>" . $order->description . "</td><td>" . $order->price . "</td><td>" . $order->quantity . "</td></tr>";
+		}
+
+		$message = $message . "</tbody></table><br><h4>Total: </h4><h3> $" . $this->session->userdata['total'] . "</h3></div></body></html>";
+
+		return $message;
+	}
+
+	function _addOrderItems($orderid){
+		$this->load->model('product_model');
+		$cart_items = $this->session->userdata('cart');
+		$this->load->model('orderitem');
+		if ($cart_items) {
+			foreach ($cart_items as $item_id => $quantity) {
+				$new_order = new OrderItem();
+				$new_order->order_id = $orderid;
+				$new_order->product_id = $item_id;
+				$new_order->quantity = $quantity;
+				$this->orderitem_model->insert($new_order);
+			}
+		} else {
+			$data['empty_cart'] = true;
 		}
 	}
 
@@ -223,29 +305,6 @@ class CandyStore extends CI_Controller {
 		return false;
 	}
 
-	function check_database($password) {
-		$username = $this->input->post('username');
-
-		$result = $this->customer_model->login($username, $password);
-
-		if($result) {
-			$sess_array = array();
-			foreach($result as $row)
-			{
-				$sess_array = array(
-					'id' => $row->id,
-					'username' => $row->login,
-					'first' => $row->first,
-					'last' => $row->last
-					);
-				$this->session->set_userdata('logged_in', $sess_array);
-			}
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	function addToCart($product_id) {
 		if($this->session->userdata('logged_in')) {
 			$cart_items = $this->session->userdata('cart');
@@ -286,6 +345,7 @@ class CandyStore extends CI_Controller {
 		if ($cart_items) {
 			foreach ($cart_items as $item_id => $quantity) {
 				$product = $this->product_model->get($item_id);
+				$product->quantity = $quantity;
 				$data['products'][] = $product;
 			}
 		} else {
