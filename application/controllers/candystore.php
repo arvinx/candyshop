@@ -299,7 +299,9 @@ class CandyStore extends CI_Controller {
 
 	function _checkExpYear($ey) {
 		if (preg_match('/[0-9]{4}/', $ey)) {
-			return true;
+			if($ey >= date('Y')){
+				return true;
+			}
 		}
 		$this->session->set_flashdata('payment_error', 'Your card has expired or you need to enter a valid year.');
 		return false;

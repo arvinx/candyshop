@@ -46,11 +46,11 @@
 		<br/>
 
 		<label for="creditcard_month">Credit Card Expiry Month:</label>
-		<input type="text" pattern="[0-9]{2}" maxlength="2" id="creditcard_month" name="creditcard_month" required />
+		<input type="text" pattern="[0-9]{2}" placeholder="MM" maxlength="2" id="creditcard_month" name="creditcard_month" required />
 		<br/>
 
 		<label for="creditcard_year">Credit Card Expiry Year:</label>
-		<input type="text" pattern="[0-9]{4}" maxlength="4" id="creditcard_year" name="creditcard_year" required />
+		<input type="text" pattern="[0-9]{4}" placeholder="YY" maxlength="4" id="creditcard_year" name="creditcard_year" required />
 		<br/>
 		<?php
 			$warning = $this->session->flashdata("payment_error");
