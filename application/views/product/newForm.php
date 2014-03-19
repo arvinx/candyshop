@@ -32,6 +32,7 @@
 
 		<?php 	
 		$warning = $this->session->flashdata("product_form_error");
+
 		if ($warning) {
 			echo " <div data-alert class='alert-box'>" . $warning . "</div>";
 		}

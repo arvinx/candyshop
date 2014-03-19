@@ -82,6 +82,7 @@ class CandyStore extends CI_Controller {
 					'last' => $row->last
 					);
 				$this->session->set_userdata('logged_in', $sess_array);
+				$this->session->unset_userdata('admin');
 			}
 			return true;
 		} else {
@@ -164,10 +165,10 @@ class CandyStore extends CI_Controller {
 		//Check for 16 digits
 		$this->form_validation->set_rules('creditcard_number', 'Credit Card', 'trim|required|xss_clean|callback__checkCC');
 		$this->form_validation->set_rules('creditcard_year', 'Expiry Year', 'trim|required|xss_clean|callback__checkExpYear');
-		$month = $this->input->get_post('creditcard_year');
-		if($month > date('Y')){
-			$this->form_validation->set_rules('creditcard_month', 'Expiry Month', 'trim|required|xss_clean');
-		} else if ($month == date('Y')) {
+		$year = $this->input->get_post('creditcard_year');
+		if($year > date('Y')){
+			$this->form_validation->set_rules('creditcard_month', 'Expiry Month', 'trim|required|xss_clean|callback__checkValidMonth');
+		} else if ($year == date('Y')) {
 			$this->form_validation->set_rules('creditcard_month', 'Expiry Month', 'trim|required|xss_clean|callback__checkExpMonth');
 		}
 
@@ -188,14 +189,15 @@ class CandyStore extends CI_Controller {
 			$order_id = $this->db->insert_id();
 			$this->_addOrderItems($order_id);
 			$this->_sendEmailReceipt();
-
+			$this->session->set_userdata('oldCart', $this->session->userdata['cart']);
+			$this->session->unset_userdata('cart');
 			redirect('candystore/displayReceipt', 'refresh');
 
 		}
 	}
 
 	function displayReceipt(){
-		$products = $this->_getCartItems();
+		$products = $this->_getOldCartItems();
 		$data['products'] = $products['products'];
 		$date['orderDate'] = $this->session->userdata['orderDate'];
 		$this->load->view('templates/header.html');
@@ -209,16 +211,10 @@ class CandyStore extends CI_Controller {
 		$curr = $this->session->userdata['logged_in'];
 		$user = $this->customer_model->getCustomer($curr['id']);
 		$this->load->library('email');
-		$config['protocol'] = 'sendmail';
-		$config['mailpath'] = '/usr/sbin/sendmail';
-		$config['smtp_host'] = 'smtp.gmail.com';
-		$config['smtp_user'] = 'candystorecsc309@gmail.com';
-		$config['smtp_pass'] =  'csc123456789';
-		$config['smtp_port'] = '465';
 		$config['mailtype'] = 'html';
 		$this->email->initialize($config);
 
-		$this->email->from('candystorecsc309@gmail.com', 'Candy Store');
+		$this->email->from('orderconfirmation@candyshop.com', 'Candy Shop'); //No SMTP confirguration needed on CDF.
 		$this->email->to($user[0]['email']); 
 		$this->email->subject('Candy Store Order Receipt');
 		$message = $this->_constructMailReceipt($user[0], $data['products']);
@@ -286,6 +282,16 @@ class CandyStore extends CI_Controller {
 		return ($total % 10 == 0) ? TRUE : FALSE;
 	}
 
+	function _checkValidMonth($em){
+		if (preg_match('/[0-9]{2}/', $em)) {
+			if ($em <= 12){
+				return true;
+			}
+		}
+		$this->session->set_flashdata('payment_error', 'You need to enter a valid month.');
+		return false;
+	}
+
 	function _checkExpMonth($em) {
 		if (preg_match('/[0-9]{2}/', $em)) {
 			if ($em <= 12){
@@ -339,6 +345,22 @@ class CandyStore extends CI_Controller {
 				}
 			}
 		}
+	}
+
+	function _getOldCartItems(){
+		$this->load->model('product_model');
+		$cart_items = $this->session->userdata('oldCart');
+		$data['products']= array();
+		if ($cart_items) {
+			foreach ($cart_items as $item_id => $quantity) {
+				$product = $this->product_model->get($item_id);
+				$product->quantity = $quantity;
+				$data['products'][] = $product;
+			}
+		} else {
+			$data['empty_cart'] = true;
+		}
+		return $data;
 	}
 
 	function _getCartItems(){
@@ -407,6 +429,15 @@ class CandyStore extends CI_Controller {
 		$this->load->view('admin/adminpanel.php',$data);
 	}
 
+	function deleteallcustomers() {
+		if (!$this->session->userdata("admin")) {
+			$this->session->set_flashdata("login_error", "Please login to use admin feature");
+			redirect("candystore/login");
+		}
+
+		$this->customer_model->deleteAll();
+	}
+
 	function displayOrder($orderId) {
 		$this->load->model('orderitem');
 		$this->load->model('product');
@@ -462,6 +493,7 @@ class CandyStore extends CI_Controller {
 		else {
 			if (!$fileUploadSuccess) {
 				$this->session->set_flashdata("product_form_error", $this->upload->display_errors());
+				
 			}
 			redirect("candystore/newForm", 'refresh');
 		}	
@@ -535,14 +567,11 @@ class CandyStore extends CI_Controller {
 		if (!isset($id)) return;
 		$type = $this->input->post('type');
 		if ($type == 'product') {
-			error_log("deleting product " . $id);
 			$this->load->model('product_model');
 			$this->product_model->delete($id);
 		} elseif ($type == 'customer') {
-			error_log("deleting customer " . $id);
 			$this->customer_model->delete($id);
 		} elseif ($type == 'order') {
-			error_log("deleting order " . $id);
 			$this->load->model('order_model');
 			$this->order_model->delete($id);
 		}

@@ -24,7 +24,7 @@
 						echo "<td><form>
 								<input name='quantity' class='quantity-input' type='number' min='0' value=" . $session_cart_items[$product->id] . " required disabled />
 								</form></td>";
-						echo "<td>$" . $session_cart_items[$product->id]*$product->price . "</td>";
+						echo "<td class='sub-total'>$" . $session_cart_items[$product->id]*$product->price . "</td>";
 						echo "<td class='delete-item' style='display: none'><img class='delete-btn' alt=" . $product->id . " width=20 height=20 src=" . base_url() . "/images/remove.png /></td>";
 						$total += $session_cart_items[$product->id]*$product->price;
 					}

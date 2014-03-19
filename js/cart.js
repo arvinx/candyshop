@@ -16,9 +16,12 @@ $(function(){
 						var product_id = row.find(".delete-btn").attr('alt');
 						updateCartRequest(product_id, quantity);
 						total += Number(quantity)*Number(row.find(".product-price").html().split("$")[1]);
+						row.find('.sub-total').html("$" + Number(quantity)*Number(row.find(".product-price").html().split("$")[1]));
 					} else {
 						row.find(".quantity-input").val(1);
+						row.find('.sub-total').html("$" + Number(row.find(".product-price").html().split("$")[1]));
 					}
+
 				}
 			});
 			$("#order-total").html("Order Total: $" + total.toFixed(2));

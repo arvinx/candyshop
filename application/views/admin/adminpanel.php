@@ -5,7 +5,7 @@
 		<h3>Products</h3>
 		<p>Click Name to Edit</p>
 		<?php
-			echo anchor('candystore/newForm','Add New Candy', array('class' => 'button tiny'));
+			echo anchor('candystore/newForm','Add New Candy', array('class' => 'button medium'));
 		?>
 		<table>
 			<thead>
@@ -54,6 +54,7 @@
 		</table>
 		<h3>Customers</h3>
 		<h5>*Deleting a Customer deletes their Orders (and OrderItems)</h5>
+ 		<button id='delete-all-btn' class='button small'>Delete All Customers</button>
 		<table>
 			<thead>
 				<tr>
